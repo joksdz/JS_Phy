@@ -2,13 +2,19 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let left,right, up , down
 const ballz = []
-class Ball {
-constructor(x, y, r) {
+let f = 0.1
+     class Ball {
+   constructor(x, y, r) {
   this.x = x;
   this.y = y;
   this.r = r;
   this.player = false
     ballz.push(this)
+this.v_x = 0
+this.v_y = 0
+this.ac_x = 0 
+this.ac_y = 0
+this.acc = 1 
   }
   balls() {
       ctx.beginPath();
@@ -17,6 +23,23 @@ constructor(x, y, r) {
     ctx.fillStyle = "#d53600";
     ctx.fill();
   }
+ display()
+{
+  ctx.beginPath();
+  ctx.moveTo(this.x,this.y);
+  ctx.lineTo(this.x + this.ac_x*100, this.y + this.ac_y*100);
+  ctx.strokeStyle = "white";
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(this.x,this.y);
+  ctx.lineTo(this.x + this.v_x*10, this.y + this.v_y*10);
+  ctx.strokeStyle = "red";
+  ctx.stroke();
+
+
+
+}
 }
 
 function control(b){
@@ -35,22 +58,31 @@ if (e.keyCode == 39){right = false}
 if (e.keyCode == 40){down = false}
 })
 
-  if (left){b.x--}
-  if (right){b.x++}
-  if (up){b.y--}
-  if (down){b.y++}
+  if (left){b.ac_x = -b.acc}
+  if (right){b.ac_x =  b.acc}
+  if (up){b.ac_y = -b.acc}
+  if (down){b.ac_y =  b.acc}
+  if (!left && !right){b.ac_x = 0}
+  if (!up && !down){b.ac_y = 0}
+  b.v_x += b.ac_x
+  b.v_x *= 1- f
+  b.v_y += b.ac_y
+  b.v_y *=1 - f
+  b.x += b.v_x
+  b.y += b.v_y
+ }
 
-}
 
  function repeat(){
    ctx.clearRect(0, 0, canvas.width, canvas.height);
  ballz.forEach((b)=>{b.balls()
  control(b)
+    b.display()
  })
 requestAnimationFrame(repeat) 
 
 }
- let b = new Ball(200,200,50)
+ let b = new Ball(200,200,20)
 b.player = true
 
 
