@@ -15,7 +15,9 @@ this.v_y = 0
 this.ac_x = 0 
 this.ac_y = 0
 this.acc = 1
-this.gravity = 0.6
+this.player = false
+this.subplayer = false
+this.gravity = 5
   }
   balls() {
       ctx.beginPath();
@@ -62,7 +64,7 @@ if (e.keyCode == 40){down = false}
   if (left){b.ac_x = -b.acc}
   if (right){b.ac_x =  b.acc}
   if (up){b.ac_y = -b.acc}
-  if (down){b.ac_y =  b.acc}
+  if (down && !b.player){b.ac_y =  b.acc}
   if (!left && !right){b.ac_x = 0}
   if (!up && !down){b.ac_y = 0}
   b.v_x += b.ac_x
@@ -71,29 +73,38 @@ if (e.keyCode == 40){down = false}
   b.v_y *=1 - f
   b.x += b.v_x
   b.y += b.v_y
-  if (true){b.v_y += b.gravity}
  }
 function collision()
 {
-
+if (b.y + b.r> canvas.height)
+{
+    
+    b.y = canvas.height - b.r
+    b.ac_y= 0
+  }
 }
 
 
  function repeat(){
    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  if (true){b.y += b.gravity}
  ballz.forEach((b)=>{b.balls()
     box()
- control(b)
+    collision()
+ if (b.player || b.subplayer){control(b)}
     b.display()
  })
 requestAnimationFrame(repeat) 
 
 }
  let b = new Ball(200,200,20)
+b.player = false
+b.subplayer = true
 function box(){
   
 ctx.beginPath();
-ctx.rect(0, 450, 700, 100) 
+ctx.rect(0, 477, 700, 100) 
 ctx.fillStyle = "red"
 ctx.fill();
 ctx.stroke();
