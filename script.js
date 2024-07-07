@@ -14,7 +14,8 @@ this.v_x = 0
 this.v_y = 0
 this.ac_x = 0 
 this.ac_y = 0
-this.acc = 1 
+this.acc = 1
+this.gravity = 0.6
   }
   balls() {
       ctx.beginPath();
@@ -70,12 +71,18 @@ if (e.keyCode == 40){down = false}
   b.v_y *=1 - f
   b.x += b.v_x
   b.y += b.v_y
+  if (true){b.v_y += b.gravity}
  }
+function collision()
+{
+
+}
 
 
  function repeat(){
    ctx.clearRect(0, 0, canvas.width, canvas.height);
  ballz.forEach((b)=>{b.balls()
+    box()
  control(b)
     b.display()
  })
@@ -83,9 +90,15 @@ requestAnimationFrame(repeat)
 
 }
  let b = new Ball(200,200,20)
-b.player = true
+function box(){
+  
+ctx.beginPath();
+ctx.rect(0, 450, 700, 100) 
+ctx.fillStyle = "red"
+ctx.fill();
+ctx.stroke();
 
-
+}
 
 
 
