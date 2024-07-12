@@ -1,23 +1,51 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+
+
+
 let left,right, up , down
+
 const ballz = []
+
 let f = 0.1
+ class Vec {
+   constructor(x,y)
+{
+
+    this.x = x 
+    this.y = y
+  }
+  add(v)
+{
+    return new Vec(this.x + v.x , this.y + v.y)
+  }
+  sub(v)
+{
+    return new Vec(this.x - v.x , this.y - v.y)
+  }
+  multi(n)
+{
+    return new Vec(this.x * n , this.y * n)
+  }
+  len()
+{ 
+    return Math.sqrt(this.x ** 2 , this.y ** 2)
+  }
+
+ }
      class Ball {
    constructor(x, y, r) {
   this.x = x;
   this.y = y;
   this.r = r;
   this.player = false
-    ballz.push(this)
-this.v_x = 0
-this.v_y = 0
-this.ac_x = 0 
-this.ac_y = 0
-this.acc = 1
-this.player = false
-this.subplayer = false
-this.gravity = 5
+  ballz.push(this)
+    this.vel = new Vec(0,0)
+    this.ac = new Vec (0,0)
+    this.acc = 1
+  this.player = false
+  this.subplayer = false
+  this.gravity = 5
   }
   balls() {
       ctx.beginPath();
@@ -61,18 +89,16 @@ if (e.keyCode == 39){right = false}
 if (e.keyCode == 40){down = false}
 })
 
-  if (left){b.ac_x = -b.acc}
-  if (right){b.ac_x =  b.acc}
-  if (up){b.ac_y = -b.acc}
-  if (down && !b.player){b.ac_y =  b.acc}
-  if (!left && !right){b.ac_x = 0}
-  if (!up && !down){b.ac_y = 0}
-  b.v_x += b.ac_x
-  b.v_x *= 1- f
-  b.v_y += b.ac_y
-  b.v_y *=1 - f
-  b.x += b.v_x
-  b.y += b.v_y
+  if (left){b.ac.x = -b.acc}
+  if (right){b.ac.x =  b.acc}
+  if (up){b.ac.y = -b.acc}
+  if (down && !b.player){b.ac.y =  b.acc}
+  if (!left && !right){b.ac.x = 0}
+  if (!up && !down){b.ac.y = 0}
+  b.v += b.v.add(b.ac)
+  b.v = b.v.multi(1- f)
+  b.x += b.v.x
+  b.y += b.v.y
  }
 function collision()
 {
