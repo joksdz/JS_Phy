@@ -31,16 +31,27 @@ let f = 0.1
 { 
     return Math.sqrt(this.x ** 2 , this.y ** 2)
   }
+VecLine( start_x  , start_y, n , color )
+{
+  ctx.beginPath();
+  ctx.moveTo(start_x, start_y);
+  ctx.lineTo(start_x + this.x*n, start_y+ this.y*n);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+}
+
 
  }
      class Ball {
-   constructor(x, y, r) {
+   constructor(x, y, r , color) {
   this.x = x;
+  this.color = color
   this.y = y;
   this.r = r;
   this.player = false
   ballz.push(this)
-    this.vel = new Vec(0,0)
+    this.v = new Vec(0,0)
     this.ac = new Vec (0,0)
     this.acc = 1
   this.player = false
@@ -51,27 +62,15 @@ let f = 0.1
       ctx.beginPath();
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
     ctx.stroke();
-    ctx.fillStyle = "#d53600";
+    ctx.fillStyle = this.color;
     ctx.fill();
   }
- display()
-{
-  ctx.beginPath();
-  ctx.moveTo(this.x,this.y);
-  ctx.lineTo(this.x + this.ac_x*100, this.y + this.ac_y*100);
-  ctx.strokeStyle = "white";
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(this.x,this.y);
-  ctx.lineTo(this.x + this.v_x*10, this.y + this.v_y*10);
-  ctx.strokeStyle = "red";
-  ctx.stroke();
-
-
-
-}
-}
+display()
+    {
+this.v.VecLine(this.x, this.y, 10, "white")
+this.ac.VecLine(this.x, this.y, 100, "red")
+  }
+ }
 
 function control(b){
 
@@ -95,7 +94,7 @@ if (e.keyCode == 40){down = false}
   if (down && !b.player){b.ac.y =  b.acc}
   if (!left && !right){b.ac.x = 0}
   if (!up && !down){b.ac.y = 0}
-  b.v += b.v.add(b.ac)
+  b.v = b.v.add(b.ac)
   b.v = b.v.multi(1- f)
   b.x += b.v.x
   b.y += b.v.y
@@ -106,7 +105,7 @@ if (b.y + b.r> canvas.height)
 {
     
     b.y = canvas.height - b.r
-    b.ac_y= 0
+    b.ac.y= 0
   }
 }
 
@@ -124,7 +123,7 @@ if (b.y + b.r> canvas.height)
 requestAnimationFrame(repeat) 
 
 }
- let b = new Ball(200,200,20)
+ let b = new Ball(200,200,20 , "#d53600")
 b.player = false
 b.subplayer = true
 function box(){
