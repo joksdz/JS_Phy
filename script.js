@@ -34,7 +34,24 @@ let f = 0.1
   // this calculates the length of the vector 
   len()
 { 
-    return Math.sqrt(this.x ** 2 , this.y ** 2)
+    return Math.sqrt(this.x ** 2 + this.y ** 2)
+  }
+  normal()
+{
+    return new Vec(-this.y, this.x).unit()
+  }
+  static dot(v1, v2)
+     {
+    return v1.x * v2.x + v1.y * v2.y
+
+  }
+  // this calculates the unit vector
+  unit(){
+        if(this.len() === 0){
+            return new Vec(0,0);
+        } else {
+            return new Vec(this.x/this.len(), this.y/this.len())
+        }
   }
   //this draws the vector on the canvas
 VecLine( start_x  , start_y, n , color )
@@ -44,16 +61,17 @@ VecLine( start_x  , start_y, n , color )
   ctx.lineTo(start_x + this.x*n, start_y+ this.y*n);
   ctx.strokeStyle = color;
   ctx.stroke();
+  ctx.closePath();
 
 }
 
 
  }
      class Ball {
-   constructor(x, y, r , color, mass) {
-  this.x = x;
-  this.color = color
-  this.y = y;
+   constructor(x, y, r , color, mass, g) {
+    
+    this.pos = new Vec(x, y)
+    this.color = color
   this.r = r;
   this.player = false
   this.mass = mass
@@ -66,36 +84,61 @@ VecLine( start_x  , start_y, n , color )
   this.subplayer = false
      // controls the gravity 
   this.gravity = 5
+    this.g = g 
   }
 //this collision method only works the lower platform to stop the balls from falling 
  collision()
 {
-if (this.y + this.r >= canvas.height)
+if (this.pos.y + this.r >= canvas.height)
 {
     
-    this.y = canvas.height - this.r
+    this.pos.y = canvas.height - this.r
     this.ac.y = 0
   }
+if (this.pos.x + this.r >= canvas.width)
+{
+    
+    this.pos.x = canvas.width - this.r
+    this.ac.x = 0
+  }
+    
+if (this.pos.y -this.r <= 0)
+{
+    
+    this.pos.y = 0 + this.r
+    this.ac.y = 0
+  }
+if (this.pos.x - this.r <= 0)
+{
+    
+    this.pos.x = 0 + this.r
+    this.ac.x = 0
+  }
+
 }
   //draws the ball on canvas also gives gravity 
   balls() {
       ctx.beginPath();
-    ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
+    ctx.arc(this.pos.x,this.pos.y,this.r,0,2*Math.PI);
     ctx.stroke();
     ctx.fillStyle = this.color;
     ctx.fill();
     if (this.mass == undefined ){this.mass = 1}
     else
     {
+if (this.mass > 0 ) {
 
-if (true){this.y += this.gravity * this.mass}
+if (this.g){this.pos.y += this.gravity * this.mass}
+      }
+      else {this.mass =1}
     }
+    
   }
   //this displays the ball's velocity and acceleration vectors 
 display()
     {
-this.v.VecLine(this.x, this.y, 10, "white")
-this.ac.VecLine(this.x, this.y, 100, "red")
+this.v.VecLine(this.pos.x, this.pos.y, 10, "white")
+this.ac.VecLine(this.pos.x, this.pos.y, 100, "red")
   }
  }
 
@@ -124,13 +167,39 @@ if (e.keyCode == 40){down = false}
   // thsi is to stop the balls from moving when keys are not pressed
   if (!left && !right){b.ac.x = 0}
   if (!up && !down){b.ac.y = 0}
+  b.ac = b.ac.unit().multi(b.acc)
   //adds acceleration to the velocity
   b.v = b.v.add(b.ac)
   // this adds friction to the velocity 
   b.v = b.v.multi(1- f)
-  b.x += b.v.x
-  b.y += b.v.y
+  b.pos = b.pos.add(b.v)
+
  }
+
+function round(n , precision)
+{
+  let factor = 10**precision
+  return Math.round(n*factor)/factor
+}
+function coll_det(b1 , b2)
+ {
+if ( b1.r + b2.r >= b2.pos.sub(b1.pos).len())
+{
+    return true
+  }
+  else {return false}
+
+}
+function pen_res(b1,b2)
+{
+
+  let dist = b1.pos.sub(b2.pos)
+  let depth = b1.r + b2.r - dist.len()
+  let res = dist.unit().multi(depth / 2)
+  b1.pos = b1.pos.add(res)
+  b2.pos = b2.pos.add(res.multi(-1))
+
+}
 
 
 
@@ -139,22 +208,32 @@ if (e.keyCode == 40){down = false}
   //clears the canvas every frame
    ctx.clearRect(0, 0, canvas.width, canvas.height);
   //adds gravity 
-  
- ballz.forEach((b)=>{b.balls()
-
   b.collision()
-    b1.collision()
+ b1.collision()
+ ballz.forEach((b, index)=>{b.balls()
     // checking if player or subplayer is true to give it control
  if (b.player || b.subplayer){control(b)}
     b.display()
+    for (let i = index + 1 ; i < ballz.length ; i++)
+  {
+
+ if (coll_det(ballz[index],ballz[i]))
+{
+    pen_res(ballz[index], ballz[i])
+  
+      }
+    }
+
  })
+
+ 
 requestAnimationFrame(repeat) 
 
 }
 // initializing the ball
- let b = new Ball(200,200,20 , "#d53600")
- let b1 = new Ball(100,100,20 , "#A2300D", 2)
- let b2 = new Ball(400,50,20 , "#A2300D")
+ let b = new Ball(200,200,20 , "#d53600" ,1, true)
+ let b1 = new Ball(100,100,50 , "#A2300D",0, true)
+ let b2 = new Ball(400,50,30 , "#A2300D",2, false)
 // setting the player and subplayer(its the same but the subplayer can move down while on gravity )
 b.player = false
 b.subplayer = true
