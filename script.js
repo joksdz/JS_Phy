@@ -50,12 +50,14 @@ VecLine( start_x  , start_y, n , color )
 
  }
      class Ball {
-   constructor(x, y, r , color) {
+   constructor(x, y, r , color, mass) {
   this.x = x;
   this.color = color
   this.y = y;
   this.r = r;
   this.player = false
+    this.mass = mass
+    mass = 1 
   ballz.push(this)
     //sets velocity and acceleration to a new vector (0,0)
     this.v = new Vec(0,0)
@@ -66,14 +68,24 @@ VecLine( start_x  , start_y, n , color )
      // controls the gravity 
   this.gravity = 5
   }
-  //draws the ball on canvas 
+//this collision method only works the lower platform to stop the balls from falling 
+ collision()
+{
+if (this.y + this.r >= canvas.height)
+{
+    
+    this.y = canvas.height - this.r
+    this.ac.y = 0
+  }
+}
+  //draws the ball on canvas also gives gravity 
   balls() {
       ctx.beginPath();
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
     ctx.stroke();
     ctx.fillStyle = this.color;
     ctx.fill();
-if (true){this.y += b.gravity}
+if (true){this.y += this.gravity * this.mass}
 
   }
   //this displays the ball's velocity and acceleration vectors 
@@ -117,16 +129,7 @@ if (e.keyCode == 40){down = false}
   b.y += b.v.y
  }
 
-//this collision method only works the lower platform to stop the balls from falling 
-function collision()
-{
-if (b.y + b.r> canvas.height)
-{
-    
-    b.y = canvas.height - b.r
-    b.ac.y= 0
-  }
-}
+
 
 
  function repeat(){
@@ -135,9 +138,9 @@ if (b.y + b.r> canvas.height)
   //adds gravity 
   
  ballz.forEach((b)=>{b.balls()
-    box()
 
-  collision()
+  b.collision()
+    b1.collision()
     // checking if player or subplayer is true to give it control
  if (b.player || b.subplayer){control(b)}
     b.display()
@@ -146,22 +149,14 @@ requestAnimationFrame(repeat)
 
 }
 // initializing the ball
+ let b = new Ball(200,200,20 , "#d53600" , 1)
+ let b1 = new Ball(100,100,20 , "#A2300D", 2)
 
- let b = new Ball(200,200,20 , "#d53600")
 // setting the player and subplayer(its the same but the subplayer can move down while on gravity )
 b.player = false
 b.subplayer = true
 
-// making a platform so that the balls dont go offbound 
-function box(){
-  
-ctx.beginPath();
-ctx.rect(0, 477, 700, 100) 
-ctx.fillStyle = "red"
-ctx.fill();
-ctx.stroke();
 
-}
 
 
 
