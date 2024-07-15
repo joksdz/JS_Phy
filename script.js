@@ -73,6 +73,8 @@ VecLine( start_x  , start_y, n , color )
     ctx.stroke();
     ctx.fillStyle = this.color;
     ctx.fill();
+if (true){this.y += b.gravity}
+
   }
   //this displays the ball's velocity and acceleration vectors 
 display()
@@ -131,7 +133,6 @@ if (b.y + b.r> canvas.height)
   //clears the canvas every frame
    ctx.clearRect(0, 0, canvas.width, canvas.height);
   //adds gravity 
-  if (true){b.y += b.gravity}
   
  ballz.forEach((b)=>{b.balls()
     box()
@@ -161,6 +162,7 @@ ctx.fill();
 ctx.stroke();
 
 }
+
 
 
 
