@@ -56,8 +56,7 @@ VecLine( start_x  , start_y, n , color )
   this.y = y;
   this.r = r;
   this.player = false
-    this.mass = mass
-    mass = 1 
+  this.mass = mass
   ballz.push(this)
     //sets velocity and acceleration to a new vector (0,0)
     this.v = new Vec(0,0)
@@ -85,8 +84,12 @@ if (this.y + this.r >= canvas.height)
     ctx.stroke();
     ctx.fillStyle = this.color;
     ctx.fill();
-if (true){this.y += this.gravity * this.mass}
+    if (this.mass == undefined ){this.mass = 1}
+    else
+    {
 
+if (true){this.y += this.gravity * this.mass}
+    }
   }
   //this displays the ball's velocity and acceleration vectors 
 display()
@@ -149,9 +152,9 @@ requestAnimationFrame(repeat)
 
 }
 // initializing the ball
- let b = new Ball(200,200,20 , "#d53600" , 1)
+ let b = new Ball(200,200,20 , "#d53600")
  let b1 = new Ball(100,100,20 , "#A2300D", 2)
-
+ let b2 = new Ball(400,50,20 , "#A2300D")
 // setting the player and subplayer(its the same but the subplayer can move down while on gravity )
 b.player = false
 b.subplayer = true
