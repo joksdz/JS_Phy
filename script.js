@@ -208,10 +208,9 @@ function pen_res(b1,b2)
   //clears the canvas every frame
    ctx.clearRect(0, 0, canvas.width, canvas.height);
   //adds gravity 
-  b.collision()
- b1.collision()
  ballz.forEach((b, index)=>{b.balls()
     // checking if player or subplayer is true to give it control
+    b.collision()
  if (b.player || b.subplayer){control(b)}
     b.display()
     for (let i = index + 1 ; i < ballz.length ; i++)
