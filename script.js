@@ -4,7 +4,7 @@ const ctx = canvas.getContext("2d");
 
 
 // boolean values to check if the keys are pressed
-let left,right, up , down
+let left,right, up , down ,ball
 
 const ballz = []
 //this controls the friction 
@@ -85,6 +85,7 @@ VecLine( start_x  , start_y, n , color )
      // controls the gravity 
   this.gravity = 5
     this.g = g 
+	
   }
 //this collision method only works the lower platform to stop the balls from falling 
  collision()
@@ -140,6 +141,17 @@ display()
 this.v.VecLine(this.pos.x, this.pos.y, 10, "white")
 this.ac.VecLine(this.pos.x, this.pos.y, 100, "red")
   }
+repos()
+{
+
+ this.ac = this.ac.unit().multi(this.acc)
+  //adds acceleration to the velocity
+  this.v = this.v.add(this.ac)
+  // this adds friction to the velocity 
+  this.v = this.v.multi(1- f)
+  this.pos = this.pos.add(this.v)
+}
+
  }
 
 function control(b){
@@ -164,15 +176,10 @@ if (e.keyCode == 40){down = false}
   if (right){b.ac.x =  b.acc}
   if (up){b.ac.y = -b.acc}
   if (down && !b.player){b.ac.y =  b.acc}
-  // thsi is to stop the balls from moving when keys are not pressed
+  // this is to stop the balls from moving when keys are not pressed
   if (!left && !right){b.ac.x = 0}
   if (!up && !down){b.ac.y = 0}
-  b.ac = b.ac.unit().multi(b.acc)
-  //adds acceleration to the velocity
-  b.v = b.v.add(b.ac)
-  // this adds friction to the velocity 
-  b.v = b.v.multi(1- f)
-  b.pos = b.pos.add(b.v)
+  
 
  }
 
@@ -200,6 +207,17 @@ function pen_res(b1,b2)
   b2.pos = b2.pos.add(res.multi(-1))
 
 }
+function coll_res(b1 , b2)
+{
+let normal = b1.pos.sub(b2.pos).unit()
+let relV = b1.v.sub(b2.v)
+let sepV = Vec.dot(relV, normal)
+let new_sepV = -sepV *2 
+let sepVV = normal.multi(new_sepV)
+
+b1.v = b1.v.add(sepVV)
+b2.v = b2.v.add(sepVV.multi(-1)) 
+}
 
 
 
@@ -213,12 +231,14 @@ function pen_res(b1,b2)
     b.collision()
  if (b.player || b.subplayer){control(b)}
     b.display()
+    b.repos()
     for (let i = index + 1 ; i < ballz.length ; i++)
   {
 
  if (coll_det(ballz[index],ballz[i]))
 {
     pen_res(ballz[index], ballz[i])
+    coll_res(ballz[index], ballz[i])			
   
       }
     }
@@ -229,9 +249,10 @@ function pen_res(b1,b2)
 requestAnimationFrame(repeat) 
 
 }
+
 // initializing the ball
  let b = new Ball(200,200,20 , "#d53600" ,1, true)
- let b1 = new Ball(100,100,50 , "#A2300D",0, true)
+ let b1 = new Ball(100,100,50 , "#A2300D",2, true)
  let b2 = new Ball(400,50,30 , "#A2300D",2, false)
 // setting the player and subplayer(its the same but the subplayer can move down while on gravity )
 b.player = false
